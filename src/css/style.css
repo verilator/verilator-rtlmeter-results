@@ -1,0 +1,178 @@
+/* General CSS */
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: Tahoma, Arial, Helvetica, sans-serif;
+  font-size: 11pt;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#header {
+  flex: 0;
+  min-height: 32px;
+  display: flex;
+  justify-content: space-between;
+  background-color: #45acf8;
+}
+
+#header-title {
+  margin: 0;
+  padding-left: 5pt;
+  padding-right: 5pt;
+  align-content: center;
+  font-size: 16pt;
+}
+
+#share-button {
+  margin: 3pt;
+}
+
+.main {
+  flex: 1;
+  width: 100vw;
+  display: flex;
+  overflow: auto;
+}
+
+#side {
+  flex: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  height: 100%;
+}
+
+#side .panel {
+  flex: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#side #case-list {
+  flex: 2;
+  overflow-y: hidden;
+}
+
+#side #step-metric-list {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+#side .panel #panel-body {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#side #panel-heading {
+  font-weight: bold;
+  text-align: center;
+  background-color: #999999;
+  padding: 1pt;
+}
+
+#side .panel-top {
+  display: flex;
+  flex-direction: row;
+}
+
+#side .panel-top button {
+  flex: 1;
+  margin: 0;
+  border: none;
+  font-weight: bold;
+  text-align: center;
+  background-color: #bbbbbb;
+}
+
+#side .panel-top button:hover {
+  background-color: #cccccc;
+}
+
+#side .date-range {
+  display: flex;
+  padding-left: 5pt;
+  padding-right: 5pt;
+}
+
+#side .date-range input {
+  flex: 1;
+}
+
+.toggle-off, .toggle-on {
+  margin: 0;
+  border: none;
+  text-align: left;
+  padding-left: 5pt;
+  padding-right: 5pt;
+}
+.toggle-off {
+  background-color: #eeeeee;
+}
+.toggle-off:hover {
+  background-color: #cccccc;
+}
+.toggle-on {
+  background-color: #80c0e0;
+}
+
+#graphs {
+  flex: 1;
+  display: block;
+  align-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+#graphs-alt {
+  font-size: 16pt;
+  text-align: center;
+  width: 100%;
+}
+
+.graph-container {
+  position: relative;
+  width: 95%;
+  height: 95%;
+  margin: 20px;
+  background-color: #d8d8d8;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  width: 60%; /* Could be more or less, depending on screen size */
+}
+
+#progress-box {
+  width: 100%;
+  background-color: #eeeeee;
+}
+
+#progress-bar {
+  width: 0%;
+  height: 30px;
+  background-color: #008fd7;
+}

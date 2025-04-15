@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Verilator RTLMeter results</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+  <!-- Primary page -->
+  <div id="root">
+    <div id="header">
+      <p id="header-title">Verilator RTLMeter results</p>
+      <button id="share-button">Share</button>
+    </div>
+    <div class="main">
+
+      <div id="side">
+        <div id="date-list" class="panel">
+          <div id="panel-heading">Date range</div>
+          <div id="panel-body"></div>
+          <div class="date-range">
+            <input type="date" id="date-lo" min="2025-04-20"/>
+            <input type="date" id="date-hi" min="2025-04-20"/>
+          </div>
+        </div>
+        <div id="option-list" class="panel">
+          <div id="panel-heading">Options</div>
+          <div id="panel-body"></div>
+        </div>
+        <div id="case-list" class="panel">
+          <div id="panel-heading">Cases</div>
+          <div class="panel-top">
+            <button id="select-all">All</button>
+            <button id="select-none">None</button>
+          </div>
+          <div id="panel-body"></div>
+        </div>
+        <div id="run-list" class="panel">
+          <div id="panel-heading">Runs</div>
+          <div class="panel-top">
+            <button id="select-all">All</button>
+            <button id="select-none">None</button>
+          </div>
+          <div id="panel-body"></div>
+        </div>
+        <div id="step-metric-list" class="panel">
+          <div id="panel-heading">Step / Metric</div>
+          <div class="panel-top">
+            <button id="select-all">All</button>
+            <button id="select-none">None</button>
+          </div>
+          <div id="panel-body"></div>
+        </div>
+      </div>
+
+      <div id="graphs">
+        <p id="graphs-alt"></p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Progress modal -->
+  <div id="progress-modal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <p>Loading result data ...</p>
+      <div id="progress-box">
+        <div id="progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="bundle.js"></script>
+
+</body>
+
+</html>

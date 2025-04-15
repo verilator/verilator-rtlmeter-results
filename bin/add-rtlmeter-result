@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import hashlib
+import os
+
+from datetime import datetime, UTC
+
+
+def digest(s: str) -> str:
+    sha1 = hashlib.sha1(usedforsecurity=False)
+    sha1.update(s.encode("utf-8"))
+    return sha1.hexdigest()[0:10]
+
+def updateCasesFile(dataDir: str, results) -> None:
+    casesFile = os.path.join(dataDir, "cases.json")
+    # Create empty file if it does not exist
+    if not os.path.exists(casesFile):
+        with open(casesFile, "w", encoding="utf-8") as fd:
+            fd.write("[]\n")
+    # Read current file
+    with open(casesFile, "r", encoding="utf-8") as fd:
+        cases = json.load(fd)
+    # Update
+    for case in results["cases"].keys():
+        if case not in cases:
+            cases.append(case)
+            cases = sorted(cases)
+    # Write back
+    with open(casesFile, "w", encoding="utf-8") as fd:
+        json.dump(cases, fd, indent=2, sort_keys=True)
+
+
+def recordHostInfo(dataDir: str, results) -> str:
+    cpuinfoDir = os.path.join(dataDir, "cpuinfo")
+    os.makedirs(cpuinfoDir, exist_ok=True)
+    cpuinfo = results["cpuinfo"]
+    cpuinfoDigest = digest(cpuinfo)
+    with open(os.path.join(cpuinfoDir, cpuinfoDigest), "w", encoding="utf-8") as fd:
+        fd.write(cpuinfo)
+    return cpuinfoDigest
+
+
+def recordRunInfo(
+    dataDir: str,
+    results,
+    cpuinfoDigest: str
+) -> int:
+    dataFile = os.path.join(dataDir, "runinfo.json")
+    # Create empty file if it does not exist
+    if not os.path.exists(dataFile):
+        with open(dataFile, "w", encoding="utf-8") as fd:
+            fd.write("[]\n")
+    # Read current file
+    with open(dataFile, "r", encoding="utf-8") as fd:
+        data = json.load(fd)
+    # Update
+    data.append({
+        "date": results["date"],
+        "VerilatorVersion": results["VerilatorVersion"],
+        "RTLMeterVersion": results["RTLMeterVersion"],
+        "cpuinfo": cpuinfoDigest
+    })
+    # Write back
+    with open(dataFile, "w", encoding="utf-8") as fd:
+        json.dump(data, fd, indent=2, sort_keys=True)
+    # Return index of new entry
+    return len(data) - 1
+
+
+def recordCaseResults(
+    dataFile: str,
+    caseResults,
+    runInfoIndex: int
+) -> None:
+    # Create empty file if it does not exist
+    if not os.path.exists(dataFile):
+        with open(dataFile, "w", encoding="utf-8") as fd:
+            fd.write("{}\n")
+    # Read current file
+    with open(dataFile, "r", encoding="utf-8") as fd:
+        data = json.load(fd)
+    # Update
+    runData = data.setdefault(args.descr, {})
+    for step, stepEntries in caseResults.items():
+        stepData = runData.setdefault(step, {})
+        for metric, values in stepEntries.items():
+            metricData = stepData.setdefault(metric, [])
+            metricData.append({
+                "run": runInfoIndex,
+                "values": values
+            })
+    # Write back
+    with open(dataFile, "w", encoding="utf-8") as fd:
+        json.dump(data, fd, indent=2, sort_keys=True)
+
+
+def recordSteps(dataDir: str, results ) -> None:
+    dataFile = os.path.join(dataDir, "steps.json")
+    # Create empty file if it does not exist
+    if not os.path.exists(dataFile):
+        with open(dataFile, "w", encoding="utf-8") as fd:
+            fd.write("{}\n")
+    # Read current file
+    with open(dataFile, "r", encoding="utf-8") as fd:
+        data = json.load(fd)
+    # Update
+    data.update(results["steps"])
+    # Write back
+    with open(dataFile, "w", encoding="utf-8") as fd:
+        json.dump(data, fd, indent=2, sort_keys=True)
+
+
+def recordMetrics(dataDir: str, results ) -> None:
+    dataFile = os.path.join(dataDir, "metrics.json")
+    # Create empty file if it does not exist
+    if not os.path.exists(dataFile):
+        with open(dataFile, "w", encoding="utf-8") as fd:
+            fd.write("{}\n")
+    # Read current file
+    with open(dataFile, "r", encoding="utf-8") as fd:
+        data = json.load(fd)
+    # Update
+    data.update(results["metrics"])
+    # Write back
+    with open(dataFile, "w", encoding="utf-8") as fd:
+        json.dump(data, fd, indent=2, sort_keys=True)
+
+
+def main(args: argparse.ArgumentParser) -> None:
+    # Path to data directory (relative to this Python file)
+    dataDir = os.path.abspath(os.path.join(__file__, "..", "..", "src", "data"))
+
+    # Load results
+    with open(args.datafile, "r", encoding="utf-8") as fd:
+        results = json.load(fd)
+
+    # Update the cases file
+    updateCasesFile(dataDir, results)
+
+    # Record host info
+    cpuinfoDigest = recordHostInfo(dataDir, results)
+
+    # Record run info
+    runIndex = recordRunInfo(
+        dataDir,
+        results,
+        cpuinfoDigest
+    )
+
+    # Record data
+    resultsDir = os.path.join(dataDir, "results")
+    os.makedirs(resultsDir, exist_ok=True)
+    for case, caseResults in results["cases"].items():
+        dataFile = os.path.join(resultsDir, f"{case}.json")
+        recordCaseResults(dataFile, caseResults, runIndex)
+
+    # Record steps
+    recordSteps(dataDir, results)
+
+    # Record metrics
+    recordMetrics(dataDir, results)
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(
+        prog="add-rtlmeter-result",
+        description="Add RTLMeter result to static site data",
+         allow_abbrev=False
+    )
+
+    parser.add_argument(
+        "--descr",
+        help="Description of invocation",
+        type=str,
+        required=True
+    )
+
+    parser.add_argument(
+        "datafile",
+        help="Name of data file output by 'rtlmeter collate'",
+        metavar="DATAFILE"
+    )
+
+    # Parse arguments and dispatch to entry point
+    args = parser.parse_args()
+    main(args)

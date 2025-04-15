@@ -1,0 +1,14 @@
+{
+  "compile": {
+    "description": "'verilate' + 'cppbuild' combined together"
+  },
+  "cppbuild": {
+    "description": "Compiling Verilator output into executable"
+  },
+  "execute": {
+    "description": "Running simulation"
+  },
+  "verilate": {
+    "description": "Running Verilator"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "ccacheHit": {
+    "description": "ccache hit rate during C++ compilation",
+    "header": "ccache hit rate",
+    "higherIsBetter": true,
+    "unit": "%"
+  },
+  "clocks": {
+    "description": "Number of simulated main clock cycles (deterministic, for sanity checking only)",
+    "header": "Sim clock cycles",
+    "higherIsBetter": null,
+    "unit": "count"
+  },
+  "cpu": {
+    "description": "Sum of CPU User + CPU System",
+    "header": "CPU Total",
+    "higherIsBetter": false,
+    "unit": "s"
+  },
+  "elapsed": {
+    "description": "Wall clock time elapsed during the step (time %e)",
+    "header": "Elapsed time",
+    "higherIsBetter": false,
+    "unit": "s"
+  },
+  "memory": {
+    "description": "Maximum resident set size durint the step (time %M)",
+    "header": "Peak memory",
+    "higherIsBetter": false,
+    "unit": "MB"
+  },
+  "speed": {
+    "description": "Frequency of main clock during simulation (simulated clock cycles / elapsed time)",
+    "header": "Sim speed",
+    "higherIsBetter": true,
+    "unit": "kHz"
+  },
+  "system": {
+    "description": "Cumulative CPU time used by the step in kernel mode (time %S)",
+    "header": "CPU System",
+    "higherIsBetter": false,
+    "unit": "s"
+  },
+  "traceSize": {
+    "description": "Size of trace dumps",
+    "header": "Trace dump size",
+    "higherIsBetter": false,
+    "unit": "MB"
+  },
+  "user": {
+    "description": "Cumulative CPU time used by the step in user mode (time %U)",
+    "header": "CPU User",
+    "higherIsBetter": false,
+    "unit": "s"
+  }
+}
