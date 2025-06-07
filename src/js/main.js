@@ -2,6 +2,7 @@ import Chart from "chart.js/auto"
 import "chartjs-adapter-luxon"
 import copyToClipboard from "copy-to-clipboard"
 import lzstring from "lz-string"
+import { DateTime } from "luxon"
 
 import cases from "../data/cases.json"
 
@@ -119,7 +120,6 @@ class Selector extends EventTarget {
     }
 
     selectMultiple(strs) {
-        console.log(strs)
         this.#selectMultipleButtons(strs.map((str) => this._buttons.get(str)))
     }
 
@@ -249,6 +249,47 @@ function updateSMSelector() {
             }
         }
     }
+}
+
+let selA = {caseName: null, runName: null, execId: null}
+let selB = {caseName: null, runName: null, execId: null}
+
+function pointRadius(context, /* options */) {
+    if (context.type == "data") {
+        const chart = context.chart
+        const dataset = chart.data.datasets[context.datasetIndex]
+        const data = dataset.data[context.index]
+        if (selB.execId === data.execId
+            && selB.caseName === dataset.caseName
+            && selB.runName === dataset.runName) {
+                return 10
+        }
+        if (selA.execId == data.execId
+            && selA.caseName == dataset.caseName
+            && selA.runName == dataset.runName) {
+                return 10
+        }
+    }
+    return 3
+}
+
+function pointStyle(context, /* options */) {
+    if (context.type == "data") {
+        const chart = context.chart
+        const dataset = chart.data.datasets[context.datasetIndex]
+        const data = dataset.data[context.index]
+        if (selB.execId == data.execId
+            && selB.caseName == dataset.caseName
+            && selB.runName == dataset.runName) {
+                return "rect"
+        }
+        if (selA.execId == data.execId
+            && selA.caseName == dataset.caseName
+            && selA.runName == dataset.runName) {
+                return "triangle"
+        }
+    }
+    return "circle"
 }
 
 const charts = new Map()
@@ -392,6 +433,17 @@ function getChart(stepName, metricName) {
                     }
                 },
             },
+            interaction: {
+                mode: "nearest",
+                intersect: false
+            },
+            elements: {
+                point: {
+                    radius: pointRadius,
+                    hoverRadius: pointRadius,
+                    pointStyle: pointStyle
+                }
+            },
             plugins: {
                 title: {
                     display: true,
@@ -401,15 +453,7 @@ function getChart(stepName, metricName) {
                         size: 16,
                         weight: "bold"
                     }
-                },
-                tooltip: {
-                    callbacks: {
-                        footer: () => {
-                            return "EEEE!!!"
-                        },
-                    }
                 }
-
             }
         }
     })
@@ -441,6 +485,7 @@ function updateCharts() {
         }
         graphsAlt.textContent = text
         graphsAlt.style.display = "block"
+        updateDetails()
     }
 
     // Check current selection
@@ -503,14 +548,15 @@ function updateCharts() {
 
                 const data = []
                 for (const entry of metricData) {
-                    const date = runInfos[entry.run].date
+                    const execId = entry.run
+                    const date = runInfos[execId].date
                     if (date < dateL || dateH <= date) continue
                     const value = entry.values[0]
                     data.push({
                         date: date,
                         value: value,
                         raw: value,
-                        run: entry.run
+                        execId: execId
                     })
                 }
 
@@ -518,6 +564,8 @@ function updateCharts() {
                 const label = `${caseName} ${runName}`
                 const color = getStableColor(label)
                 datasets.push({
+                    caseName: caseName,
+                    runName: runName,
                     label: label,
                     data: data,
                     xAxisID: "xDefault",
@@ -596,6 +644,9 @@ function updateCharts() {
             chart.canvas.parentNode.style.display = "none"
         }
     }
+
+    // Update details panel
+    updateDetails()
 }
 
 function updateDateRange() {
@@ -633,19 +684,22 @@ function updateDateRange() {
 
 function saveState() {
     const state = {
-        version: 1,
+        version: 2,
         dateLo: dateLo.value,
         dateHi: dateHi.value,
         optionSelection: Array.from(optionSelector.selected().values()).toSorted(),
         caseSelection: Array.from(caseSelector.selected().values()).toSorted(),
         runSelection: Array.from(runSelector.selected().values()).toSorted(),
-        smSelection: Array.from(smSelector.selected().values()).toSorted()
+        smSelection: Array.from(smSelector.selected().values()).toSorted(),
+        detailsA: selA,
+        detailsB: selB
     }
+    console.log(state)
     return state
 }
 
 function loadState(state) {
-    if (state.version != 1) {
+    if (state.version > 2) {
         console.error(`Cannot handle state version '${state.version}'`)
         return
     }
@@ -660,6 +714,10 @@ function loadState(state) {
     runSelector.selectMultiple(state.runSelection)
     smSelector.selectNone()
     smSelector.selectMultiple(state.smSelection)
+    if (state.version >= 2) {
+        selA = state.detailsA
+        selB = state.detailsB
+    }
 }
 
 const shareButton = document.getElementById("share-button")
@@ -670,6 +728,328 @@ shareButton.onclick = () => {
     const url = window.location.origin + window.location.pathname + "#" + stateString
     copyToClipboard(url)
 }
+
+const detailsA = {
+    name: document.getElementById("details-a").querySelector("#case-name"),
+    info: document.getElementById("details-a").querySelector("#info"),
+    data: document.getElementById("details-a").querySelector("#metrics")
+}
+const detailsB = {
+    name: document.getElementById("details-b").querySelector("#case-name"),
+    info: document.getElementById("details-b").querySelector("#info"),
+    data: document.getElementById("details-b").querySelector("#metrics")
+}
+const detailsDiff = {
+    name: document.getElementById("details-diff").querySelector("#case-name"),
+    info: document.getElementById("details-diff").querySelector("#info"),
+    data: document.getElementById("details-diff").querySelector("#metrics")
+}
+
+function getFormattedDate(execId) {
+    return DateTime.fromJSDate(runInfos[execId].date).toFormat("yyyy-MM-dd")
+}
+
+function getVerilatorCommit(execId) {
+    return runInfos[execId]["VerilatorVersion"].split("-g")[1].slice(0, 8)
+}
+
+function getRTLMeterCommit(execId) {
+    return runInfos[execId]["RTLMeterVersion"].slice(0, 8)
+}
+
+function getCPUInfoHash(execId) {
+    return runInfos[execId]["cpuinfo"]
+}
+
+function addTableRow(table, columns) {
+    const row = document.createElement("tr")
+    for (const col of columns) {
+        const cell = document.createElement("td")
+        if (typeof(col) == "string") {
+            cell.textContent = col
+        } else {
+            cell.appendChild(col)
+        }
+        row.appendChild(cell)
+    }
+    table.appendChild(row)
+}
+
+function addDetails(panel, sel, data) {
+    // Set case name
+    panel.name.textContent = sel.caseName
+
+    // Update info table
+    {
+        panel.info.replaceChildren()
+        // Add date
+        addTableRow(panel.info, ["Date:", getFormattedDate(sel.execId)])
+        // Add run name
+        addTableRow(panel.info, ["Run:", sel.runName])
+        // Add link to Verilator commit
+        {
+            const a = document.createElement("a")
+            const commit = getVerilatorCommit(sel.execId)
+            a.textContent = commit
+            a.setAttribute("href", `https://github.com/verilator/verilator/commits/${commit}`)
+            a.setAttribute("target", "_blank")
+            addTableRow(panel.info, ["Verilator:", a])
+        }
+        // Add link to RTLMeter commit
+        {
+            const a = document.createElement("a")
+            const commit = getRTLMeterCommit(sel.execId)
+            a.textContent = commit
+            a.setAttribute("href", `https://github.com/verilator/rtlmeter/commits/${commit}`)
+            a.setAttribute("target", "_blank")
+            addTableRow(panel.info, ["RTLMeter:", a])
+        }
+        // Add host CPU info
+        {
+            addTableRow(panel.info, ["Host CPU:", `${getCPUInfoHash(sel.execId)}`])
+        }
+        panel.info.style.display = "block"
+    }
+
+    // Update data table
+    {
+        panel.data.replaceChildren()
+        // Add metrics
+        for (const smName of data.keys()) {
+            const metricName = smName.split(" / ").at(-1)
+            const mDef = metricDefs[metricName]
+            addTableRow(panel.data, [smName, `${data.get(smName).toFixed(2)} ${mDef.unit}`])
+        }
+        panel.data.style.display = "block"
+    }
+}
+
+function getDetails(sel) {
+    const {caseName, runName, execId} = sel
+    if (caseName === null || runName === null || execId === null) return null
+
+    if (!caseSelector.selected().has(caseName)) return null
+    if (!runSelector.selected().has(runName)) return null
+
+    const date = runInfos[execId].date
+    const dateL = dateLo.valueAsDate
+    if (date < dateL) return null
+    const dateH = new Date(dateHi.valueAsNumber + DAY_MS) // The next day, exclusive upper bound
+    if (dateH < date) return null
+
+    if (!allData.has(caseName)) return null
+    const caseData = allData.get(caseName)
+    if (!(runName in caseData)) return null
+    const runData = caseData[runName]
+
+    const result = new Map()
+    for (const smName of smSelector.selected()) {
+        const [stepName, metricName] = smName.split(" / ")
+
+        if (!(stepName in runData)) continue
+        const stepData = runData[stepName]
+        if (!(metricName in stepData)) continue
+        const metricData = stepData[metricName]
+
+        for (const entry of metricData) {
+            if (entry.run == execId) {
+                result.set(smName, entry.values[0])
+                break
+            }
+        }
+    }
+    return result
+}
+
+function updateDetails() {
+    // Options
+    const mean = optionSelector.selected().has("Mean")
+
+    // Update details panel A
+    detailsA.info.style.display = "none"
+    detailsA.data.style.display = "none"
+    let dataA = null
+    if (mean) {
+        detailsA.name.textContent = "Not available with option 'Mean' enabled"
+    } else {
+        dataA = getDetails(selA)
+        if (dataA === null) {
+            detailsA.name.textContent = "Click chart to select ▲ data point"
+        } else {
+            addDetails(detailsA, selA, dataA)
+        }
+    }
+
+    // Update details panel B
+    detailsB.info.style.display = "none"
+    detailsB.data.style.display = "none"
+    let dataB = null
+    if (mean) {
+        detailsB.name.textContent = "Not available with option 'Mean' enabled"
+    } else {
+        dataB = getDetails(selB)
+        if (dataB === null) {
+            detailsB.name.textContent = "Double click chart to select ■ data point"
+        } else {
+            addDetails(detailsB, selB, dataB)
+        }
+    }
+
+    // Update details diff panel
+    detailsDiff.info.style.display = "none"
+    detailsDiff.data.style.display = "none"
+    if (mean) {
+        detailsDiff.name.textContent = "Not available with option 'Mean' enabled"
+    } else if (dataA === null) {
+        detailsDiff.name.textContent = "Click chart to select ▲ data point"
+    } else if (dataB === null) {
+        detailsDiff.name.textContent = "Double click chart to select ■ data point"
+    } else {
+        // Add case name
+        if (selA.caseName == selB.caseName){
+            detailsDiff.name.textContent = selA.caseName
+        } else {
+            detailsDiff.name.innerHTML = `${selA.caseName}<br>→<br>${selB.caseName}`
+        }
+
+        // Update info table
+        {
+            detailsDiff.info.replaceChildren()
+            // Add date
+            {
+                const dateA = getFormattedDate(selA.execId)
+                const dateB = getFormattedDate(selB.execId)
+                let text = null
+                if (dateA == dateB) {
+                    text = `${dateA} (same)`
+                } else {
+                    text = `${dateA} → ${dateB}`
+                }
+                if (dateA > dateB) {
+                    text += " (reverse)"
+                }
+                addTableRow(detailsDiff.info, ["Date:", text])
+            }
+            // Add run name
+            {
+                let text = null
+                if (selA.runName == selB.runName) {
+                    text = `${selA.runName} (same)`
+                } else {
+                    text = `${selA.runName} → ${selB.runName}`
+                }
+                addTableRow(detailsDiff.info, ["Run:", text])
+            }
+            // Add link to Verilator diff
+            {
+                const commitA = getVerilatorCommit(selA.execId)
+                const commitB = getVerilatorCommit(selB.execId)
+                const span = document.createElement("span")
+                const link = document.createElement("a")
+                const post = document.createElement("span")
+                if (commitA == commitB) {
+                    link.textContent = `${commitA}`
+                    link.setAttribute("href", `https://github.com/verilator/verilator/commits/${commitA}`)
+                    post.textContent = " (same)"
+                } else if (runInfos[selA.execId].date < runInfos[selB.execId].date) {
+                    link.textContent = `${commitA}...${commitB}`
+                    link.setAttribute("href", `https://github.com/verilator/verilator/compare/${commitA}...${commitB}`)
+                } else {
+                    link.textContent = `${commitA}...${commitB}`
+                    link.setAttribute("href", `https://github.com/verilator/verilator/compare/${commitB}...${commitA}`)
+                    post.textContent = " (reverse)"
+                }
+                link.setAttribute("target", "_blank")
+                span.appendChild(link)
+                span.appendChild(post)
+                addTableRow(detailsDiff.info, ["Verilator:", span])
+
+            }
+            // Add link to RTLMeter diff
+            {
+                const commitA = getRTLMeterCommit(selA.execId)
+                const commitB = getRTLMeterCommit(selB.execId)
+                const span = document.createElement("span")
+                const link = document.createElement("a")
+                const post = document.createElement("span")
+                if (commitA == commitB) {
+                    link.textContent = `${commitA}`
+                    link.setAttribute("href", `https://github.com/verilator/rtlmeter/commits/${commitA}`)
+                    post.textContent = " (same)"
+                } else if (runInfos[selA.execId].date < runInfos[selB.execId].date) {
+                    link.textContent = `${commitA}...${commitB}`
+                    link.setAttribute("href", `https://github.com/verilator/rtlmeter/compare/${commitA}...${commitB}`)
+                } else {
+                    link.textContent = `${commitA}...${commitB}`
+                    link.setAttribute("href", `https://github.com/verilator/rtlmeter/compare/${commitB}...${commitA}`)
+                    post.textContent = " (reverse)"
+                }
+                link.setAttribute("target", "_blank")
+                span.appendChild(link)
+                span.appendChild(post)
+                addTableRow(detailsDiff.info, ["RTLMeter:", span])
+            }
+            // Add host CPU info diff
+            {
+                const hashA = getCPUInfoHash(selA.execId)
+                const hashB = getCPUInfoHash(selB.execId)
+                let text = null
+                if (hashA == hashB) {
+                    text = `${hashA} (same)`
+                } else {
+                    text = `${hashA} != ${hashB}`
+                }
+                addTableRow(detailsDiff.info, ["Host CPU:", text])
+            }
+            detailsDiff.info.style.display = "block"
+        }
+
+        // Update data table
+        {
+            detailsDiff.data.replaceChildren()
+            // Add metrics
+            for (const smName of dataA.keys()) {
+                const valA = dataA.get(smName)
+                const valB = dataB.get(smName)
+                if (valB === undefined) continue
+                addTableRow(detailsDiff.data, [smName, `${(valB/valA).toFixed(3)}x`])
+            }
+            detailsDiff.data.style.display = "block"
+        }
+    }
+}
+
+let pendingClick = null
+
+const selectorPlugin = {
+    id: "selector",
+    afterEvent(chart, args) {
+        if (args.event.type == "click" && !args.replay) {
+            const interactionOptions = chart.options.interaction
+            const interactionMode = interactionOptions.mode
+            const item = chart.getElementsAtEventForMode(args.event, interactionMode, interactionOptions, false)[0];
+            const dataset = chart.data.datasets[item.datasetIndex]
+            const caseName = dataset.caseName
+            const runName = dataset.runName
+            const execId = dataset.data[item.index].execId
+            if (args.event.native.detail == 1) {
+                clearTimeout(pendingClick)
+                pendingClick = setTimeout(() => {
+                    selA = {caseName, runName, execId}
+                    updateCharts()
+                }, 300)
+            } else {
+                clearTimeout(pendingClick)
+                pendingClick = setTimeout(() => {
+                    selB = {caseName, runName, execId}
+                    updateCharts()
+                }, 0)
+            }
+        }
+    }
+}
+
+Chart.register(selectorPlugin)
 
 
 async function entryPoint() {

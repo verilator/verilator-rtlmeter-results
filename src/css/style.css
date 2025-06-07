@@ -116,7 +116,7 @@ body {
   padding-right: 5pt;
 }
 .toggle-off {
-  background-color: #eeeeee;
+  background-color: #f3f3f3;
 }
 .toggle-off:hover {
   background-color: #cccccc;
@@ -144,7 +144,63 @@ body {
   width: 95%;
   height: 95%;
   margin: 20px;
-  background-color: #eeeeee;
+  background-color: #f3f3f3;
+}
+
+#details {
+  flex: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  height: 100%;
+  background-color: #f3f3f3;
+}
+
+#details #details-a {
+  flex: 1;
+  height: 33%;
+}
+
+#details #details-b {
+  flex: 1;
+  height: 33%;
+}
+
+#details #details-diff {
+  flex: 1;
+  height: 34%;
+}
+
+#details .panel {
+  flex: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#details #panel-heading {
+  font-weight: bold;
+  text-align: center;
+  background-color: #999999;
+  padding: 1pt;
+}
+
+#details #panel-body {
+  overflow-y: auto;
+  padding: 5px;
+}
+
+#details #case-name {
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+#details a:link {
+  color: #008fd7;
+}
+
+#details a:visited {
+  color: #008fd7;
 }
 
 .modal {
@@ -168,7 +224,7 @@ body {
 
 #progress-box {
   width: 100%;
-  background-color: #eeeeee;
+  background-color: #f3f3f3;
 }
 
 #progress-bar {
