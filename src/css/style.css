@@ -73,7 +73,7 @@ body {
   overflow-y: auto;
 }
 
-#side #panel-heading {
+#side .panel #panel-heading {
   font-weight: bold;
   text-align: center;
   background-color: #999999;
@@ -151,7 +151,7 @@ body {
   flex: 0;
   display: flex;
   flex-direction: column;
-  min-width: 300px;
+  min-width: 330px;
   height: 100%;
   background-color: #f3f3f3;
 }
@@ -203,7 +203,7 @@ body {
   color: #008fd7;
 }
 
-.modal {
+#modal {
   display: none;
   position: fixed;
   z-index: 1;
@@ -211,19 +211,49 @@ body {
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   background-color: rgba(0,0,0,0.4);
+  align-content: center;
+  justify-items: center;
 }
 
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
+.modal-root {
+  background-color: #ffffff;
+  display: none; /* will be 'display: flex' when shown */
+  flex-direction: column;
+  margin: 0;
+  border: none;
+  border-radius: 10px;
   padding: 20px;
-  width: 60%; /* Could be more or less, depending on screen size */
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex: none;
+  margin: 0;
+  margin-bottom: 15px;
+  border: none;
+  padding: 0;
+}
+
+.modal-title {
+  flex: none;
+  font-family: inherit;
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.modal-close-button {
+  margin: 0;
 }
 
 #progress-box {
-  width: 100%;
+  width: 60vw;
   background-color: #f3f3f3;
 }
 
@@ -231,4 +261,44 @@ body {
   width: 0%;
   height: 30px;
   background-color: #008fd7;
+}
+
+#cpuinfo {
+  flex: 1 1 auto;
+  width: 90vw;
+  height: 85vh;
+  overflow: auto;
+  font-family: Menlo, Consolas, monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  margin: 0;
+  border: 1px solid #dddddd;
+  padding: 0;
+}
+
+#cpuinfo-diff {
+  flex: 1 1 auto;
+  width: 90vw;
+  /* max-height: 85vh; */
+  overflow: hidden;
+  margin: 0;
+  /* border: 1px solid black; */
+  padding: 0;
+}
+
+/* diff2html */
+div.d2h-file-header {
+  display: none;
+}
+div.d2h-file-wrapper {
+  margin: 0;
+  padding: 0;
+}
+div.d2h-file-diff {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 85vh;
+}
+div.d2h-code-wrapper {
+  position: relative;
 }

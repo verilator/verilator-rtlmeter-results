@@ -3,6 +3,9 @@ import "chartjs-adapter-luxon"
 import copyToClipboard from "copy-to-clipboard"
 import lzstring from "lz-string"
 import { DateTime } from "luxon"
+import { createTwoFilesPatch } from "diff"
+import { Diff2HtmlUI } from 'diff2html/lib/ui/js/diff2html-ui-base.js'
+import 'diff2html/bundles/css/diff2html.min.css'
 
 import cases from "../data/cases.json"
 
@@ -34,6 +37,19 @@ const allData = new Map()
 let stepDefs = null
 let metricDefs = null
 let runInfos = null
+
+const cpuinfoCache = new Map()
+
+async function getCPUInfo(hash) {
+    if (!cpuinfoCache.has(hash)) {
+        const value = await window
+            .fetch(`data/cpuinfo/${hash}`)
+            .then((response) => response.text())
+        cpuinfoCache.set(hash, value)
+    }
+    return cpuinfoCache.get(hash)
+}
+
 
 class Selector extends EventTarget {
     constructor(parentId, isOneHot, initialSelection) {
@@ -561,7 +577,7 @@ function updateCharts() {
                 }
 
 
-                const label = `${caseName} ${runName}`
+                const label = `${caseName} | ${runName}`
                 const color = getStableColor(label)
                 datasets.push({
                     caseName: caseName,
@@ -694,7 +710,6 @@ function saveState() {
         detailsA: selA,
         detailsB: selB
     }
-    console.log(state)
     return state
 }
 
@@ -727,6 +742,37 @@ shareButton.onclick = () => {
     const stateString = lzstring.compressToBase64(JSON.stringify(state))
     const url = window.location.origin + window.location.pathname + "#" + stateString
     copyToClipboard(url)
+}
+
+const modal = document.getElementById("modal")
+
+function showModal(id, autoClose) {
+    let root = null
+    for (const node of modal.children) {
+        if (node.id == id) {
+            node.style.display = "flex"
+            root = node
+        } else {
+            node.style.display = "none"
+        }
+    }
+
+    // If not closed automatically, allow closing by either:
+    // - Clicking on the overlay outside the modal itself
+    // - Clicking the close button, if there is one exists
+    if (!autoClose) {
+        modal.onclick = (event) => {
+            if (event.target === modal) hideModal()
+        }
+        const button = root.querySelector(".modal-close-button")
+        if (button) button.onclick = hideModal
+    }
+    modal.style.display = "block"
+}
+
+function hideModal() {
+    modal.style.display = "none"
+    modal.onclick = null
 }
 
 const detailsA = {
@@ -806,7 +852,20 @@ function addDetails(panel, sel, data) {
         }
         // Add host CPU info
         {
-            addTableRow(panel.info, ["Host CPU:", `${getCPUInfoHash(sel.execId)}`])
+            const a = document.createElement("a")
+            const hash = getCPUInfoHash(sel.execId)
+            // This is a link just for display formatting purposes
+            a.setAttribute("href", "#")
+            a.textContent = hash
+            a.onclick = async () => {
+                const title = document.getElementById("cpuinfo-title")
+                const body = document.getElementById("cpuinfo")
+                const date = getFormattedDate(sel.execId)
+                title.textContent = `CPU info for:   ${sel.caseName} | ${sel.runName} @ ${date}`
+                body.textContent = await getCPUInfo(hash)
+                showModal("cpuinfo-modal", /* autoClose: */ false)
+            }
+            addTableRow(panel.info, ["Host CPU:", a])
         }
         panel.info.style.display = "block"
     }
@@ -993,13 +1052,50 @@ function updateDetails() {
             {
                 const hashA = getCPUInfoHash(selA.execId)
                 const hashB = getCPUInfoHash(selB.execId)
-                let text = null
+                const span = document.createElement("span")
+                const link = document.createElement("a")
+                const post = document.createElement("span")
+                // This is a link just for display formatting purposes
+                link.setAttribute("href", "#")
+                const dateA = getFormattedDate(selA.execId)
+                const dateB = getFormattedDate(selB.execId)
+                const titleA = `${selA.caseName} | ${selA.runName} @ ${dateA}`
+                const titleB = `${selB.caseName} | ${selB.runName} @ ${dateB}`
                 if (hashA == hashB) {
-                    text = `${hashA} (same)`
+                    link.textContent = `${hashA}`
+                    link.onclick = async() => {
+                        const title = document.getElementById("cpuinfo-title")
+                        const body = document.getElementById("cpuinfo")
+                        title.innerHTML = `CPU info for:   ${titleA}   AND   ${titleB}`
+                        body.textContent = await getCPUInfo(hashA)
+                        showModal("cpuinfo-modal", /* autoClose: */ false)
+                    }
+                    post.textContent = " (same)"
                 } else {
-                    text = `${hashA} != ${hashB}`
+                    link.textContent = `${hashA} != ${hashB}`
+                    link.onclick = async() => {
+                        const cpuinfoPromiseA = getCPUInfo(hashA)
+                        const cpuinfoPromiseB = getCPUInfo(hashB)
+                        const cpuinfoA = await cpuinfoPromiseA
+                        const cpuinfoB = await cpuinfoPromiseB
+
+                        // Set title
+                        const title = document.getElementById("cpuinfo-diff-title")
+                        title.textContent = `CPU info diff:   ${titleA}   →   ${titleB}`
+                        // Compute patch
+                        const patch = createTwoFilesPatch(titleA, titleB, cpuinfoA, cpuinfoB)
+                        // Display via 'diff2html'
+                        const body = document.getElementById("cpuinfo-diff")
+                        const conf = { drawFileList: false, matching: "words", highlight: false }
+                        const diff2HtmlUI = new Diff2HtmlUI(body, patch, conf)
+                        diff2HtmlUI.draw()
+                        // Show the diff modal
+                        showModal("cpuinfo-diff-modal", /* autoClose: */ false)
+                    }
                 }
-                addTableRow(detailsDiff.info, ["Host CPU:", text])
+                span.appendChild(link)
+                span.appendChild(post)
+                addTableRow(detailsDiff.info, ["Host CPU:", span])
             }
             detailsDiff.info.style.display = "block"
         }
@@ -1076,10 +1172,9 @@ async function entryPoint() {
                              "Display log10 of values on Y axis")
 
     // Fetch the actual data in the background, display progress modal
+    showModal("progress-modal", /* autoClose: */ true)
     let progressNow = 0
     const progressMax = cases.length + 3
-    const modal = document.getElementById("progress-modal")
-    modal.style.display = "block"
     function addProgress() {
         progressNow += 1
         const progress = Math.trunc(100 * progressNow / progressMax)
@@ -1164,7 +1259,7 @@ async function entryPoint() {
     updateCharts()
 
     // Hide progress modal
-    modal.style.display = "none"
+    hideModal()
 }
 
 entryPoint()

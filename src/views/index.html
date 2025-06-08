@@ -95,14 +95,32 @@
     </div>
   </div>
 
-  <!-- Progress modal -->
-  <div id="progress-modal" class="modal">
-    <!-- Modal content -->
-    <div class="modal-content">
-      <p>Loading result data ...</p>
+  <!-- Modals -->
+  <div id="modal">
+    <!-- Progress -->
+    <div id="progress-modal" class="modal-root">
+      <div class="modal-header">
+        <p class="modal-title">Loading result data ...</p>
+      </div>
       <div id="progress-box">
         <div id="progress-bar"></div>
       </div>
+    </div>
+    <!-- CPU Info -->
+    <div id="cpuinfo-modal" class="modal-root">
+      <div class="modal-header">
+        <pre id="cpuinfo-title" class="modal-title"></pre>
+        <button class="modal-close-button">Close</button>
+      </div>
+      <pre id="cpuinfo"></pre>
+    </div>
+    <!-- CPU Info diff-->
+    <div id="cpuinfo-diff-modal" class="modal-root">
+      <div class="modal-header">
+        <pre id="cpuinfo-diff-title" class="modal-title"></pre>
+        <button class="modal-close-button">Close</button>
+      </div>
+      <div id="cpuinfo-diff"></div>
     </div>
   </div>
 
