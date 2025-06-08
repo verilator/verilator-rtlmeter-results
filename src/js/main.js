@@ -308,6 +308,57 @@ function pointStyle(context, /* options */) {
     return "circle"
 }
 
+
+let pendingHover = null
+function onLegendHover(evt, item, legend) {
+    clearTimeout(pendingHover)
+    pendingHover = setTimeout(() => {
+        legend.chart.data.datasets.forEach((dataset, index) => {
+            dataset.borderColor = dataset.borderColor.slice(0,7)
+            dataset.backgroundColor = dataset.backgroundColor.slice(0,7)
+            if (item.datasetIndex !== index) {
+                dataset.borderColor += "30"
+                dataset.backgroundColor  += "30"
+            }
+        })
+        legend.chart.update()
+    }, 150)
+}
+function onLegendLeave(evt, item, legend) {
+    clearTimeout(pendingHover)
+    pendingHover = setTimeout(() => {
+        legend.chart.data.datasets.forEach((dataset) => {
+            dataset.borderColor = dataset.borderColor.slice(0,7)
+            dataset.backgroundColor = dataset.backgroundColor.slice(0,7)
+        })
+        legend.chart.update()
+    }, 150)
+}
+function onHoverHandler(chart, args) {
+    // Ignore mouse move outside chart area, onLegend* handles these
+    if (args.event.type == "mousemove" && !args.inChartArea) return
+    clearTimeout(pendingHover)
+    pendingHover = setTimeout(() => {
+        chart.data.datasets.forEach((dataset) => {
+            dataset.backgroundColor = dataset.backgroundColor.slice(0, 7)
+            dataset.borderColor = dataset.borderColor.slice(0, 7)
+        });
+
+        const item = chart.getElementsAtEventForMode(args.event, "nearest",
+                                                     { intersect: true }, false)[0];
+        if (item !== undefined) {
+            chart.data.datasets.forEach((dataset, i) => {
+                if (item.datasetIndex != i) {
+                    dataset.backgroundColor += "30"
+                    dataset.borderColor += "30"
+                }
+            })
+        }
+
+        chart.update();
+    }, 150)
+}
+
 const charts = new Map()
 function getChart(stepName, metricName) {
     const smName = `${stepName} / ${metricName}`
@@ -457,6 +508,7 @@ function getChart(stepName, metricName) {
                 point: {
                     radius: pointRadius,
                     hoverRadius: pointRadius,
+                    pointHitRadius: 6,
                     pointStyle: pointStyle
                 }
             },
@@ -468,6 +520,13 @@ function getChart(stepName, metricName) {
                     font: {
                         size: 16,
                         weight: "bold"
+                    }
+                },
+                legend: {
+                    onHover: onLegendHover,
+                    onLeave: onLegendLeave,
+                    labels: {
+                        padding: 6,
                     }
                 }
             }
@@ -1116,37 +1175,51 @@ function updateDetails() {
 }
 
 let pendingClick = null
+function onClickHandler(chart, args) {
+    // Ignore if 'Mean' option is clicked
+    if (optionSelector.selected().has("Mean")) return
+    // Figure out what was clicked and record selection
+    const interactionOptions = chart.options.interaction
+    const interactionMode = interactionOptions.mode
+    const item = chart.getElementsAtEventForMode(args.event, interactionMode, interactionOptions, false)[0];
+    if (item === undefined) return
+    const dataset = chart.data.datasets[item.datasetIndex]
+    const caseName = dataset.caseName
+    const runName = dataset.runName
+    const execId = dataset.data[item.index].execId
+    if (args.event.native.detail == 1) {
+        clearTimeout(pendingClick)
+        pendingClick = setTimeout(() => {
+            selA = {caseName, runName, execId}
+            for (const chart of charts.values()) {
+                chart.update()
+            }
+            updateDetails()
+        }, 300)
+    } else {
+        clearTimeout(pendingClick)
+        pendingClick = setTimeout(() => {
+            selB = {caseName, runName, execId}
+            for (const chart of charts.values()) {
+                chart.update()
+            }
+            updateDetails()
+        }, 0)
+    }
+}
 
 const selectorPlugin = {
     id: "selector",
     afterEvent(chart, args) {
-        if (args.event.type == "click" && !args.replay) {
-            // Ignore if 'Mean' option is clicked
-            if (optionSelector.selected().has("Mean")) return
-            // Figure out what was clicked and record selection
-            const interactionOptions = chart.options.interaction
-            const interactionMode = interactionOptions.mode
-            const item = chart.getElementsAtEventForMode(args.event, interactionMode, interactionOptions, false)[0];
-            const dataset = chart.data.datasets[item.datasetIndex]
-            const caseName = dataset.caseName
-            const runName = dataset.runName
-            const execId = dataset.data[item.index].execId
-            if (args.event.native.detail == 1) {
-                clearTimeout(pendingClick)
-                pendingClick = setTimeout(() => {
-                    selA = {caseName, runName, execId}
-                    updateCharts()
-                }, 300)
-            } else {
-                clearTimeout(pendingClick)
-                pendingClick = setTimeout(() => {
-                    selB = {caseName, runName, execId}
-                    updateCharts()
-                }, 0)
-            }
+        if (args.replay) return
+        if (args.event.type == "click" ) {
+            onClickHandler(chart, args)
+        } else if (args.event.type == "mousemove" || args.event.type == "mouseout") {
+            onHoverHandler(chart, args)
         }
     }
 }
+
 
 Chart.register(selectorPlugin)
 
