@@ -275,14 +275,14 @@ function pointRadius(context, /* options */) {
         const chart = context.chart
         const dataset = chart.data.datasets[context.datasetIndex]
         const data = dataset.data[context.index]
-        if (selB.execId === data.execId
-            && selB.caseName === dataset.caseName
-            && selB.runName === dataset.runName) {
+        if (selB.execId === data.execId && selB.execId !== null
+            && selB.caseName === dataset.caseName && selB.caseName !== null
+            && selB.runName === dataset.runName && selB.runName !== null) {
                 return 10
         }
-        if (selA.execId == data.execId
-            && selA.caseName == dataset.caseName
-            && selA.runName == dataset.runName) {
+        if (selA.execId === data.execId && selA.execId !== null
+            && selA.caseName === dataset.caseName && selA.caseName !== null
+            && selA.runName === dataset.runName && selA.runName !== null) {
                 return 10
         }
     }
@@ -294,14 +294,14 @@ function pointStyle(context, /* options */) {
         const chart = context.chart
         const dataset = chart.data.datasets[context.datasetIndex]
         const data = dataset.data[context.index]
-        if (selB.execId == data.execId
-            && selB.caseName == dataset.caseName
-            && selB.runName == dataset.runName) {
+        if (selB.execId === data.execId && selB.execId !== null
+            && selB.caseName === dataset.caseName && selB.caseName !== null
+            && selB.runName === dataset.runName && selB.runName !== null) {
                 return "rect"
         }
-        if (selA.execId == data.execId
-            && selA.caseName == dataset.caseName
-            && selA.runName == dataset.runName) {
+        if (selA.execId === data.execId && selA.execId !== null
+            && selA.caseName === dataset.caseName && selA.caseName !== null
+            && selA.runName === dataset.runName && selA.runName !== null) {
                 return "triangle"
         }
     }
@@ -1121,6 +1121,9 @@ const selectorPlugin = {
     id: "selector",
     afterEvent(chart, args) {
         if (args.event.type == "click" && !args.replay) {
+            // Ignore if 'Mean' option is clicked
+            if (optionSelector.selected().has("Mean")) return
+            // Figure out what was clicked and record selection
             const interactionOptions = chart.options.interaction
             const interactionMode = interactionOptions.mode
             const item = chart.getElementsAtEventForMode(args.event, interactionMode, interactionOptions, false)[0];
