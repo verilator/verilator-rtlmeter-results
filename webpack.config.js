@@ -48,7 +48,8 @@ module.exports = {
         { from: "src/data/metrics.json", to: "data/metrics.json" },
         { from: "src/data/runinfo.json", to: "data/runinfo.json" },
         { from: "src/data/results", to: "data/results" },
-        { from: "src/data/cpuinfo", to: "data/cpuinfo" }
+        { from: "src/data/cpuinfo", to: "data/cpuinfo" },
+        { from: "src/assets", to: "assets" }
       ]
     })
   ],

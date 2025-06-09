@@ -24,17 +24,55 @@ body {
   background-color: #45acf8;
 }
 
+#header-left {
+  display: flex;
+  flex-direction: row;
+}
+
+#verilator-logo {
+  margin: 0;
+  padding: 3pt
+}
+
 #header-title {
   margin: 0;
   padding-left: 5pt;
   padding-right: 5pt;
   align-content: center;
   font-size: 16pt;
+  text-decoration: none;
+  color: #000000;
+}
+
+#header-right {
+  display: flex;
+  flex-direction: row;
 }
 
 #share-button {
   margin: 3pt;
+  margin-right: 60pt;
 }
+
+#github-logo {
+  margin: 0;
+  margin-right: 8pt;
+  padding: 3pt
+}
+
+#github-links {
+  align-content: center;
+}
+
+#github-links a {
+  color: #000000;
+  text-align: center;
+  padding: 0;
+  margin-right: 8pt;
+  font-size: 12pt;
+  text-decoration: none;
+}
+
 
 .main {
   flex: 1;
