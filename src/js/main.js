@@ -1301,9 +1301,9 @@ async function entryPoint() {
                 return response.json()
             })
             .then((data) => {
-                // Parse dates
+                // Parse dates, set hour/minute/second to 0, timezone to UTC
                 for (const entry of data) {
-                    entry.date = new Date(entry.date.split("T")[0] + "Z")
+                    entry.date = new Date(entry.date.split("T")[0] + "T00:00:00Z")
                 }
                 // Udpate progress bar
                 addProgress()
