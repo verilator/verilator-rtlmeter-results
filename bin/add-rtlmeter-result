@@ -71,6 +71,7 @@ def recordRunInfo(
 
 def recordCaseResults(
     dataFile: str,
+    runName: str,
     caseResults,
     runInfoIndex: int
 ) -> None:
@@ -82,7 +83,7 @@ def recordCaseResults(
     with open(dataFile, "r", encoding="utf-8") as fd:
         data = json.load(fd)
     # Update
-    runData = data.setdefault(args.descr, {})
+    runData = data.setdefault(runName, {})
     for step, stepEntries in caseResults.items():
         stepData = runData.setdefault(step, {})
         for metric, values in stepEntries.items():
@@ -154,7 +155,7 @@ def main(args: argparse.ArgumentParser) -> None:
     os.makedirs(resultsDir, exist_ok=True)
     for case, caseResults in results["cases"].items():
         dataFile = os.path.join(resultsDir, f"{case}.json")
-        recordCaseResults(dataFile, caseResults, runIndex)
+        recordCaseResults(dataFile, results["runName"], caseResults, runIndex)
 
     # Record steps
     recordSteps(dataDir, results)
@@ -168,13 +169,6 @@ if __name__ == "__main__":
         prog="add-rtlmeter-result",
         description="Add RTLMeter result to static site data",
          allow_abbrev=False
-    )
-
-    parser.add_argument(
-        "--descr",
-        help="Description of invocation",
-        type=str,
-        required=True
     )
 
     parser.add_argument(
