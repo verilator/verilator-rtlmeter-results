@@ -19,6 +19,10 @@ will need ``npm`` installed, you can then run ``npm run server`` to start the
 developer server. You can also use ``npm run watch``, which will start the
 developer server and reload it on any code change.
 
+When changing the UI, or layout, please check that it looks consistent on all
+three major layout engines: Blink (Chrome), Gecko (Firefox), WebKit (Safari).
+On Linux, for WebKit, you can use Epiphany (GNOME Web) for testing.
+
 The public pages are deployed automatically from the main branch when pushed
 to GitHub.
 
