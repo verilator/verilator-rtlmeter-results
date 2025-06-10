@@ -893,30 +893,31 @@ function addDetails(panel, sel, data) {
         addTableRow(panel.info, ["Run:", sel.runName])
         // Add link to Verilator commit
         {
-            const a = document.createElement("a")
             const commit = getVerilatorCommit(sel.execId)
-            a.textContent = commit
+            const a = document.createElement("a")
+            a.setAttribute("class", "details-clickable")
             a.setAttribute("href", `https://github.com/verilator/verilator/commits/${commit}`)
             a.setAttribute("target", "_blank")
+            a.textContent = commit
             addTableRow(panel.info, ["Verilator:", a])
         }
         // Add link to RTLMeter commit
         {
-            const a = document.createElement("a")
             const commit = getRTLMeterCommit(sel.execId)
-            a.textContent = commit
+            const a = document.createElement("a")
+            a.setAttribute("class", "details-clickable")
             a.setAttribute("href", `https://github.com/verilator/rtlmeter/commits/${commit}`)
             a.setAttribute("target", "_blank")
+            a.textContent = commit
             addTableRow(panel.info, ["RTLMeter:", a])
         }
         // Add host CPU info
         {
-            const a = document.createElement("a")
             const hash = getCPUInfoHash(sel.execId)
-            // This is a link just for display formatting purposes
-            a.setAttribute("href", "#")
-            a.textContent = hash
-            a.onclick = async () => {
+            const b = document.createElement("button")
+            b.setAttribute("class", "details-clickable")
+            b.textContent = hash
+            b.onclick = async () => {
                 const title = document.getElementById("cpuinfo-title")
                 const body = document.getElementById("cpuinfo")
                 const date = getFormattedDate(sel.execId)
@@ -924,7 +925,7 @@ function addDetails(panel, sel, data) {
                 body.textContent = await getCPUInfo(hash)
                 showModal("cpuinfo-modal", /* autoClose: */ false)
             }
-            addTableRow(panel.info, ["Host CPU:", a])
+            addTableRow(panel.info, ["Host CPU:", b])
         }
         panel.info.style.display = "block"
     }
@@ -1077,6 +1078,7 @@ function updateDetails() {
                     link.setAttribute("href", `https://github.com/verilator/verilator/compare/${commitB}...${commitA}`)
                     post.textContent = " (reverse)"
                 }
+                link.setAttribute("class", "details-clickable")
                 link.setAttribute("target", "_blank")
                 span.appendChild(link)
                 span.appendChild(post)
@@ -1102,6 +1104,7 @@ function updateDetails() {
                     link.setAttribute("href", `https://github.com/verilator/rtlmeter/compare/${commitB}...${commitA}`)
                     post.textContent = " (reverse)"
                 }
+                link.setAttribute("class", "details-clickable")
                 link.setAttribute("target", "_blank")
                 span.appendChild(link)
                 span.appendChild(post)
@@ -1112,17 +1115,15 @@ function updateDetails() {
                 const hashA = getCPUInfoHash(selA.execId)
                 const hashB = getCPUInfoHash(selB.execId)
                 const span = document.createElement("span")
-                const link = document.createElement("a")
+                const butn = document.createElement("button")
                 const post = document.createElement("span")
-                // This is a link just for display formatting purposes
-                link.setAttribute("href", "#")
                 const dateA = getFormattedDate(selA.execId)
                 const dateB = getFormattedDate(selB.execId)
                 const titleA = `${selA.caseName} | ${selA.runName} @ ${dateA}`
                 const titleB = `${selB.caseName} | ${selB.runName} @ ${dateB}`
                 if (hashA == hashB) {
-                    link.textContent = `${hashA}`
-                    link.onclick = async() => {
+                    butn.textContent = `${hashA}`
+                    butn.onclick = async() => {
                         const title = document.getElementById("cpuinfo-title")
                         const body = document.getElementById("cpuinfo")
                         title.innerHTML = `CPU info for:   ${titleA}   AND   ${titleB}`
@@ -1131,8 +1132,8 @@ function updateDetails() {
                     }
                     post.textContent = " (same)"
                 } else {
-                    link.textContent = `${hashA} != ${hashB}`
-                    link.onclick = async() => {
+                    butn.textContent = `${hashA} != ${hashB}`
+                    butn.onclick = async() => {
                         const cpuinfoPromiseA = getCPUInfo(hashA)
                         const cpuinfoPromiseB = getCPUInfo(hashB)
                         const cpuinfoA = await cpuinfoPromiseA
@@ -1152,7 +1153,8 @@ function updateDetails() {
                         showModal("cpuinfo-diff-modal", /* autoClose: */ false)
                     }
                 }
-                span.appendChild(link)
+                butn.setAttribute("class", "details-clickable")
+                span.appendChild(butn)
                 span.appendChild(post)
                 addTableRow(detailsDiff.info, ["Host CPU:", span])
             }

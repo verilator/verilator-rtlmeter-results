@@ -258,12 +258,16 @@ body {
   text-align: center;
 }
 
-#details a:link {
+/* Applied either to an 'a' or a 'button', they should look the same */
+.details-clickable {
   color: #008fd7;
-}
-
-#details a:visited {
-  color: #008fd7;
+  background: none;
+  text-decoration: underline;
+  font-family: monospace;
+  margin: 0;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 #modal {
