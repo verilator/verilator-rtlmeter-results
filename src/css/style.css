@@ -188,7 +188,7 @@ body {
   flex: 1;
   display: block;
   align-content: center;
-  align-items: center;
+  justify-items: center;
   overflow: auto;
 }
 
@@ -202,7 +202,10 @@ body {
   position: relative;
   width: 95%;
   height: 95%;
-  margin: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10pt;
+  margin-bottom: 10pt;
   background-color: #f3f3f3;
 }
 
