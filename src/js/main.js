@@ -826,7 +826,7 @@ function showModal(id, autoClose) {
         const button = root.querySelector(".modal-close-button")
         if (button) button.onclick = hideModal
     }
-    modal.style.display = "block"
+    modal.style.display = "flex"
 }
 
 function hideModal() {
