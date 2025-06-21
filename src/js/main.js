@@ -316,9 +316,11 @@ function onLegendHover(evt, item, legend) {
         legend.chart.data.datasets.forEach((dataset, index) => {
             dataset.borderColor = dataset.borderColor.slice(0,7)
             dataset.backgroundColor = dataset.backgroundColor.slice(0,7)
+            dataset.order = 0
             if (item.datasetIndex !== index) {
                 dataset.borderColor += "30"
                 dataset.backgroundColor  += "30"
+                dataset.order = 1
             }
         })
         legend.chart.update()
@@ -330,6 +332,7 @@ function onLegendLeave(evt, item, legend) {
         legend.chart.data.datasets.forEach((dataset) => {
             dataset.borderColor = dataset.borderColor.slice(0,7)
             dataset.backgroundColor = dataset.backgroundColor.slice(0,7)
+            dataset.order = 0
         })
         legend.chart.update()
     }, 150)
@@ -342,6 +345,7 @@ function onHoverHandler(chart, args) {
         chart.data.datasets.forEach((dataset) => {
             dataset.backgroundColor = dataset.backgroundColor.slice(0, 7)
             dataset.borderColor = dataset.borderColor.slice(0, 7)
+            dataset.order = 0
         });
 
         const item = chart.getElementsAtEventForMode(args.event, "nearest",
@@ -351,6 +355,7 @@ function onHoverHandler(chart, args) {
                 if (item.datasetIndex != i) {
                     dataset.backgroundColor += "30"
                     dataset.borderColor += "30"
+                    dataset.order = 1
                 }
             })
         }
@@ -527,6 +532,7 @@ function getChart(stepName, metricName) {
                     onLeave: onLegendLeave,
                     labels: {
                         padding: 6,
+                        sort: (a, b) => a.text.localeCompare(b.text)
                     }
                 }
             }
@@ -646,7 +652,8 @@ function updateCharts() {
                     xAxisID: "xDefault",
                     yAxisID: yAxisID,
                     borderColor: color,
-                    backgroundColor: color
+                    backgroundColor: color,
+                    order: 0
                 })
             }
         }
