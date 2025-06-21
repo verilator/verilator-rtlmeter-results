@@ -13,21 +13,23 @@ const DAY_MS = 864e5  // 1 day in milliseconds
 
 
 const PALETTE = [
-    '#4c72b0',
-    '#dd8452',
-    '#55a868',
-    '#c44e52',
-    '#8172b3',
-    '#937860',
-    '#da8bc3',
-    '#8c8c8c',
-    '#ccb974',
-    '#64b5cd'
+    // Dark,    Light
+    //          '#f3f3f3 + (0.2 alpha blended Dark)'
+    ['#4c72b0', '#d2d9e6'],
+    ['#dd8452', '#efddd3'],
+    ['#55a868', '#d3e4d7'],
+    ['#c44e52', '#ead2d3'],
+    ['#8172b3', '#dcd9e6'],
+    ['#937860', '#e0dad6'],
+    ['#da8bc3', '#eedee9'],
+    ['#8c8c8c', '#dedede'],
+    ['#ccb974', '#ebe7da'],
+    ['#64b5cd', '#d6e7eb']
 ]
 const colorCache = new Map()
-function getStableColor(key) {
+function getStableColorIndex(key) {
     if (!colorCache.has(key)) {
-        colorCache.set(key, PALETTE[colorCache.size % PALETTE.length])
+        colorCache.set(key, colorCache.size % PALETTE.length)
     }
     return colorCache.get(key)
 }
@@ -314,12 +316,12 @@ function onLegendHover(evt, item, legend) {
     clearTimeout(pendingHover)
     pendingHover = setTimeout(() => {
         legend.chart.data.datasets.forEach((dataset, index) => {
-            dataset.borderColor = dataset.borderColor.slice(0,7)
-            dataset.backgroundColor = dataset.backgroundColor.slice(0,7)
+            dataset.borderColor = PALETTE[dataset.colorIndex][0]
+            dataset.backgroundColor = PALETTE[dataset.colorIndex][0]
             dataset.order = 0
             if (item.datasetIndex !== index) {
-                dataset.borderColor += "30"
-                dataset.backgroundColor  += "30"
+                dataset.borderColor = PALETTE[dataset.colorIndex][1]
+                dataset.backgroundColor = PALETTE[dataset.colorIndex][1]
                 dataset.order = 1
             }
         })
@@ -330,8 +332,8 @@ function onLegendLeave(evt, item, legend) {
     clearTimeout(pendingHover)
     pendingHover = setTimeout(() => {
         legend.chart.data.datasets.forEach((dataset) => {
-            dataset.borderColor = dataset.borderColor.slice(0,7)
-            dataset.backgroundColor = dataset.backgroundColor.slice(0,7)
+            dataset.borderColor = PALETTE[dataset.colorIndex][0]
+            dataset.backgroundColor = PALETTE[dataset.colorIndex][0]
             dataset.order = 0
         })
         legend.chart.update()
@@ -343,8 +345,8 @@ function onHoverHandler(chart, args) {
     clearTimeout(pendingHover)
     pendingHover = setTimeout(() => {
         chart.data.datasets.forEach((dataset) => {
-            dataset.backgroundColor = dataset.backgroundColor.slice(0, 7)
-            dataset.borderColor = dataset.borderColor.slice(0, 7)
+            dataset.backgroundColor = PALETTE[dataset.colorIndex][0]
+            dataset.borderColor = PALETTE[dataset.colorIndex][0]
             dataset.order = 0
         });
 
@@ -353,8 +355,8 @@ function onHoverHandler(chart, args) {
         if (item !== undefined) {
             chart.data.datasets.forEach((dataset, i) => {
                 if (item.datasetIndex != i) {
-                    dataset.backgroundColor += "30"
-                    dataset.borderColor += "30"
+                    dataset.backgroundColor = PALETTE[dataset.colorIndex][1]
+                    dataset.borderColor = PALETTE[dataset.colorIndex][1]
                     dataset.order = 1
                 }
             })
@@ -643,7 +645,7 @@ function updateCharts() {
 
 
                 const label = `${caseName} | ${runName}`
-                const color = getStableColor(label)
+                const colorIndex = getStableColorIndex(label)
                 datasets.push({
                     caseName: caseName,
                     runName: runName,
@@ -651,8 +653,9 @@ function updateCharts() {
                     data: data,
                     xAxisID: "xDefault",
                     yAxisID: yAxisID,
-                    borderColor: color,
-                    backgroundColor: color,
+                    colorIndex: colorIndex,
+                    borderColor: PALETTE[colorIndex][0],
+                    backgroundColor: PALETTE[colorIndex][0],
                     order: 0
                 })
             }
@@ -696,6 +699,7 @@ function updateCharts() {
                 })
             }
 
+            const colorIndex = 0
             datasets.splice(0, datasets.length) // Clear array
             datasets.push({
                 label: normalize ? "Geometric mean of normalized values"
@@ -703,8 +707,9 @@ function updateCharts() {
                 data: data,
                 xAxisID: "xDefault",
                 yAxisID: yAxisID,
-                borderColor: PALETTE[0],
-                backgroundColor: PALETTE[0]
+                colorIndex: colorIndex,
+                borderColor: PALETTE[colorIndex][0],
+                backgroundColor: PALETTE[colorIndex][0]
             })
         }
 
