@@ -748,6 +748,15 @@ function updateDateRange() {
         dateHi.disabled = true
         break;
       }
+      case "Past 2 Days": {
+        const hi = new Date()
+        const lo = new Date(hi - 1*DAY_MS) // 1 day, as bounds in the UI are inclusive
+        dateLo.valueAsDate = lo
+        dateHi.valueAsDate = hi
+        dateLo.disabled = true
+        dateHi.disabled = true
+        break;
+      }
       case "All": {
         const hi = new Date()
         const lo = new Date(dateLo.getAttribute("min"))
@@ -1244,6 +1253,7 @@ async function entryPoint() {
 
     // Add date ranges
     dateSelector.addToggle("Past 14 Days", false)
+    dateSelector.addToggle("Past 2 Days", false)
     dateSelector.addToggle("All", false)
     dateSelector.addToggle("Custom", false)
 
