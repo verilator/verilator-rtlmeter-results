@@ -11,6 +11,12 @@
     "higherIsBetter": null,
     "unit": "count"
   },
+  "codeSize": {
+    "description": "Total size of all generated hot code",
+    "header": "Code size",
+    "higherIsBetter": false,
+    "unit": "MB"
+  },
   "cpu": {
     "description": "Sum of CPU User + CPU System",
     "header": "CPU Total",
