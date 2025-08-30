@@ -157,6 +157,28 @@ body {
   background-color: #cccccc;
 }
 
+#side .panel-filter {
+  display: flex;
+  flex-direction: row;
+}
+
+#side .panel-filter button {
+  flex: 1;
+  margin: 0;
+  border: none;
+  font-weight: bold;
+  text-align: center;
+}
+
+#side .panel-filter-regex {
+  flex: 1;
+}
+
+#side .panel-filter-regex-bad {
+  flex: 1;
+  background-color: #ffa2a2;
+}
+
 #side .date-range {
   display: flex;
   padding-left: 5pt;

@@ -61,6 +61,11 @@ class Selector extends EventTarget {
         this._list = div.querySelector("#panel-body")
         this._buttons = new Map()
         this._selected = new Set(initialSelection)
+        this._incl = false
+        this._excl = false
+        this._filterIncl = div.querySelector("#filter-include")
+        this._filterExcl = div.querySelector("#filter-exclude")
+        this._filterRegex = div.querySelector("#filter-regex")
 
         const selectAllButton = div.querySelector("#select-all")
         if (selectAllButton != null) {
@@ -73,6 +78,59 @@ class Selector extends EventTarget {
             selectNoneButton.title = "Deselect all items"
             selectNoneButton.onclick = () => this.selectNone()
         }
+
+        if (this._filterIncl != null && this._filterExcl != null) {
+            this._filterIncl.title = "Include items matching filter"
+            this._filterIncl.onclick = () => {
+                this._excl = false;
+                this._incl = !this._incl;
+                this.updateFilter()
+            }
+            this._filterExcl.title = "Exclude items matching filter"
+            this._filterExcl.onclick = () => {
+                this._incl = false
+                this._excl = !this._excl
+                this.updateFilter()
+            }
+            this._filterRegex.title = "Regular expression filter"
+            this._filterRegex.onkeyup = () => { this.updateFilter() }
+        }
+    }
+
+    updateFilter() {
+        this._filterIncl.setAttribute("class", this._incl ? "toggle-on" : "toggle-off")
+        this._filterExcl.setAttribute("class", this._excl ? "toggle-on" : "toggle-off")
+
+        this._filterRegex.disabled = !this._excl && !this._incl
+        let regex = null
+        if (this._excl || this._incl) {
+            try {
+                regex = new RegExp(this._filterRegex.value);
+                this._filterRegex.setAttribute("class", "panel-filter-regex")
+            } catch {
+                this._filterRegex.setAttribute("class", "panel-filter-regex-bad")
+                return
+            }
+        }
+
+        const deselect = []
+        this._buttons.forEach((button, name) => {
+            let show = !this._incl && !this._excl
+            if (!show) {
+                const match = regex.test(name)
+                show = this._excl && !match || this._incl && match
+            }
+            button.style.display = show ? "block" : "none"
+            if (!show && this._selected.has(name)) deselect.push(button)
+        })
+        this.#deselectMultipleButtons(deselect)
+    }
+
+    setFilter(incl, excl, filter) {
+        this._incl = incl
+        this._excl = excl
+        this._filterRegex.value = filter
+        this.updateFilter()
     }
 
     selectAll() {
@@ -83,8 +141,10 @@ class Selector extends EventTarget {
         // Select everyting
         this._selected.clear()
         this._buttons.forEach((button, name) => {
-            button.setAttribute("class", "toggle-on")
-            this._selected.add(name)
+            if (button.style.display != "none") {
+                button.setAttribute("class", "toggle-on")
+                this._selected.add(name)
+            }
         })
         // Dispatch change event
         this.dispatchEvent(new Event("changed"))
@@ -780,7 +840,7 @@ function updateDateRange() {
 
 function saveState() {
     const state = {
-        version: 2,
+        version: 3,
         dateLo: dateLo.value,
         dateHi: dateHi.value,
         optionSelection: Array.from(optionSelector.selected().values()).toSorted(),
@@ -788,13 +848,16 @@ function saveState() {
         runSelection: Array.from(runSelector.selected().values()).toSorted(),
         smSelection: Array.from(smSelector.selected().values()).toSorted(),
         detailsA: selA,
-        detailsB: selB
+        detailsB: selB,
+        casesIncl: caseSelector._incl,
+        casesExcl: caseSelector._excl,
+        casesFilter: caseSelector._filterRegex.value,
     }
     return state
 }
 
 function loadState(state) {
-    if (state.version > 2) {
+    if (state.version > 3) {
         console.error(`Cannot handle state version '${state.version}'`)
         return
     }
@@ -812,6 +875,9 @@ function loadState(state) {
     if (state.version >= 2) {
         selA = state.detailsA
         selB = state.detailsB
+    }
+    if (state.version >= 3) {
+        caseSelector.setFilter(state.casesIncl, state.casesExcl, state.casesFilter)
     }
 }
 

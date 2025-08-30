@@ -45,6 +45,15 @@
         </div>
         <div id="case-list" class="panel">
           <div id="panel-heading">Cases</div>
+          <div>
+            <div class="panel-filter">
+              <button id="filter-include" class="toggle-off">Include</button>
+              <button id="filter-exclude" class="toggle-off">Exclude</button>
+            </div>
+            <div class="panel-filter">
+              <input id="filter-regex" type="text" class="panel-filter-regex" value=".*:hello" disabled/>
+            </div>
+          </div>
           <div class="panel-top">
             <button id="select-all">All</button>
             <button id="select-none">None</button>
