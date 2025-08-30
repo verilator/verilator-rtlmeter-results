@@ -135,33 +135,34 @@ def main(args: argparse.ArgumentParser) -> None:
 
     # Load results
     with open(args.datafile, "r", encoding="utf-8") as fd:
-        results = json.load(fd)
+        resultsList = json.load(fd)
 
-    # Update the cases file
-    updateCasesFile(dataDir, results)
+    for results in resultsList:
+        # Update the cases file
+        updateCasesFile(dataDir, results)
 
-    # Record host info
-    cpuinfoDigest = recordHostInfo(dataDir, results)
+        # Record host info
+        cpuinfoDigest = recordHostInfo(dataDir, results)
 
-    # Record run info
-    runIndex = recordRunInfo(
-        dataDir,
-        results,
-        cpuinfoDigest
-    )
+        # Record run info
+        runIndex = recordRunInfo(
+            dataDir,
+            results,
+            cpuinfoDigest
+        )
 
-    # Record data
-    resultsDir = os.path.join(dataDir, "results")
-    os.makedirs(resultsDir, exist_ok=True)
-    for case, caseResults in results["cases"].items():
-        dataFile = os.path.join(resultsDir, f"{case}.json")
-        recordCaseResults(dataFile, results["runName"], caseResults, runIndex)
+        # Record data
+        resultsDir = os.path.join(dataDir, "results")
+        os.makedirs(resultsDir, exist_ok=True)
+        for case, caseResults in results["cases"].items():
+            dataFile = os.path.join(resultsDir, f"{case}.json")
+            recordCaseResults(dataFile, results["runName"], caseResults, runIndex)
 
-    # Record steps
-    recordSteps(dataDir, results)
+        # Record steps
+        recordSteps(dataDir, results)
 
-    # Record metrics
-    recordMetrics(dataDir, results)
+        # Record metrics
+        recordMetrics(dataDir, results)
 
 if __name__ == "__main__":
 
