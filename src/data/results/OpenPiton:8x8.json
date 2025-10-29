@@ -1,0 +1,154 @@
+{
+  "gcc --hierarchical": {
+    "compile": {
+      "codeSize": [
+        {
+          "run": 8968,
+          "values": [
+            1.411636
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 8968,
+          "values": [
+            149.28
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 8968,
+          "values": [
+            57.019999999999996
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 8968,
+          "values": [
+            1020.4200000000001
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 8968,
+          "values": [
+            6.43
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 8968,
+          "values": [
+            142.85
+          ]
+        }
+      ]
+    },
+    "cppbuild": {
+      "ccacheHit": [
+        {
+          "run": 8968,
+          "values": [
+            0.0
+          ]
+        }
+      ],
+      "codeSize": [
+        {
+          "run": 8968,
+          "values": [
+            1.411636
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 8968,
+          "values": [
+            135.04
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 8968,
+          "values": [
+            42.55
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 8968,
+          "values": [
+            311.556
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 8968,
+          "values": [
+            5.84
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 8968,
+          "values": [
+            129.2
+          ]
+        }
+      ]
+    },
+    "verilate": {
+      "cpu": [
+        {
+          "run": 8968,
+          "values": [
+            14.24
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 8968,
+          "values": [
+            14.47
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 8968,
+          "values": [
+            1020.4200000000001
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 8968,
+          "values": [
+            0.59
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 8968,
+          "values": [
+            13.65
+          ]
+        }
+      ]
+    }
+  }
+}
