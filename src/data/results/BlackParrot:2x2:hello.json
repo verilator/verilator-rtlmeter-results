@@ -1,0 +1,182 @@
+{
+  "clang --threads 4": {
+    "execute": {
+      "clocks": [
+        {
+          "run": 9098,
+          "values": [
+            7853
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 9098,
+          "values": [
+            4.62
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 9098,
+          "values": [
+            1.17
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 9098,
+          "values": [
+            14.236
+          ]
+        }
+      ],
+      "speed": [
+        {
+          "run": 9098,
+          "values": [
+            6.711965811965812
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 9098,
+          "values": [
+            0.01
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 9098,
+          "values": [
+            4.62
+          ]
+        }
+      ]
+    }
+  },
+  "gcc": {
+    "execute": {
+      "clocks": [
+        {
+          "run": 9136,
+          "values": [
+            7853
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 9136,
+          "values": [
+            2.56
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 9136,
+          "values": [
+            2.56
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 9136,
+          "values": [
+            12.96
+          ]
+        }
+      ],
+      "speed": [
+        {
+          "run": 9136,
+          "values": [
+            3.067578125
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 9136,
+          "values": [
+            0.01
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 9136,
+          "values": [
+            2.56
+          ]
+        }
+      ]
+    }
+  },
+  "gcc --hierarchical": {
+    "execute": {
+      "clocks": [
+        {
+          "run": 9084,
+          "values": [
+            7853
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 9084,
+          "values": [
+            2.59
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 9084,
+          "values": [
+            2.6
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 9084,
+          "values": [
+            13.344
+          ]
+        }
+      ],
+      "speed": [
+        {
+          "run": 9084,
+          "values": [
+            3.0203846153846152
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 9084,
+          "values": [
+            0.01
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 9084,
+          "values": [
+            2.59
+          ]
+        }
+      ]
+    }
+  }
+}
