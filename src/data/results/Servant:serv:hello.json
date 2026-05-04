@@ -1,0 +1,122 @@
+{
+  "clang --threads 4": {
+    "execute": {
+      "clocks": [
+        {
+          "run": 20940,
+          "values": [
+            53738
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 20940,
+          "values": [
+            2.01
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 20940,
+          "values": [
+            0.5
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 20940,
+          "values": [
+            4.248
+          ]
+        }
+      ],
+      "speed": [
+        {
+          "run": 20940,
+          "values": [
+            107.476
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 20940,
+          "values": [
+            0.01
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 20940,
+          "values": [
+            2.01
+          ]
+        }
+      ]
+    }
+  },
+  "gcc": {
+    "execute": {
+      "clocks": [
+        {
+          "run": 20925,
+          "values": [
+            53738
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 20925,
+          "values": [
+            0.02
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 20925,
+          "values": [
+            0.02
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 20925,
+          "values": [
+            4.1
+          ]
+        }
+      ],
+      "speed": [
+        {
+          "run": 20925,
+          "values": [
+            2686.9
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 20925,
+          "values": [
+            0.01
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 20925,
+          "values": [
+            0.02
+          ]
+        }
+      ]
+    }
+  }
+}

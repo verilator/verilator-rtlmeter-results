@@ -1,0 +1,306 @@
+{
+  "clang --threads 4": {
+    "compile": {
+      "codeSize": [
+        {
+          "run": 20940,
+          "values": [
+            0.136772
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 20940,
+          "values": [
+            35.040000000000006
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 20940,
+          "values": [
+            14.9
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 20940,
+          "values": [
+            206.12
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 20940,
+          "values": [
+            2.3
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 20940,
+          "values": [
+            32.74
+          ]
+        }
+      ]
+    },
+    "cppbuild": {
+      "ccacheHit": [
+        {
+          "run": 20940,
+          "values": [
+            0.0
+          ]
+        }
+      ],
+      "codeSize": [
+        {
+          "run": 20940,
+          "values": [
+            0.136772
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 20940,
+          "values": [
+            34.910000000000004
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 20940,
+          "values": [
+            14.72
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 20940,
+          "values": [
+            206.12
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 20940,
+          "values": [
+            2.28
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 20940,
+          "values": [
+            32.63
+          ]
+        }
+      ]
+    },
+    "verilate": {
+      "cpu": [
+        {
+          "run": 20940,
+          "values": [
+            0.13
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 20940,
+          "values": [
+            0.18
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 20940,
+          "values": [
+            30.488
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 20940,
+          "values": [
+            0.02
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 20940,
+          "values": [
+            0.11
+          ]
+        }
+      ]
+    }
+  },
+  "gcc": {
+    "compile": {
+      "codeSize": [
+        {
+          "run": 20925,
+          "values": [
+            0.106667
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 20925,
+          "values": [
+            21.87
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 20925,
+          "values": [
+            8.81
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 20925,
+          "values": [
+            294.784
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 20925,
+          "values": [
+            1.8
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 20925,
+          "values": [
+            20.07
+          ]
+        }
+      ]
+    },
+    "cppbuild": {
+      "ccacheHit": [
+        {
+          "run": 20925,
+          "values": [
+            0.0
+          ]
+        }
+      ],
+      "codeSize": [
+        {
+          "run": 20925,
+          "values": [
+            0.106667
+          ]
+        }
+      ],
+      "cpu": [
+        {
+          "run": 20925,
+          "values": [
+            21.75
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 20925,
+          "values": [
+            8.65
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 20925,
+          "values": [
+            294.784
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 20925,
+          "values": [
+            1.78
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 20925,
+          "values": [
+            19.97
+          ]
+        }
+      ]
+    },
+    "verilate": {
+      "cpu": [
+        {
+          "run": 20925,
+          "values": [
+            0.12000000000000001
+          ]
+        }
+      ],
+      "elapsed": [
+        {
+          "run": 20925,
+          "values": [
+            0.16
+          ]
+        }
+      ],
+      "memory": [
+        {
+          "run": 20925,
+          "values": [
+            32.876
+          ]
+        }
+      ],
+      "system": [
+        {
+          "run": 20925,
+          "values": [
+            0.02
+          ]
+        }
+      ],
+      "user": [
+        {
+          "run": 20925,
+          "values": [
+            0.1
+          ]
+        }
+      ]
+    }
+  }
+}
